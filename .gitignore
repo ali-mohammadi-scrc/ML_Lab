@@ -1,5 +1,6 @@
-# Pre-trained model weights
+# Pre-trained model weights and saved results
 pre_trained_models/
+saved_pickles/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
