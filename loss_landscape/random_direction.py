@@ -49,6 +49,41 @@ def loss_val_filter_normalized_dir(model, x, y, steps_res=[-1, 1, 50], n_trials=
     return steps, np.array(evals)
 
 
+def loss_val_filter_normalized_dir_2d(model, x, y, steps_res=[-1, 1, 50]):
+    def dot_prod(x, y): return np.sum(x * y)
+
+    def to1D(x):
+        if(not hasattr(x, '__iter__')):
+            return [x]
+        y = []
+        for l in x:
+            y += to1D(l)
+        return y
+    random_dirs = [get_filter_wise_normalized_direction(
+        model) for i in range(50)]
+    random_dirs_1D = [np.array(to1D(r_dir)) for r_dir in random_dirs]
+    cross_dot_prod = [[np.abs(dot_prod(random_dirs_1D[i], random_dirs_1D[j]))
+                       for j in range(len(random_dirs))] for i in range(len(random_dirs))]
+    min_ind = np.argmin(cross_dot_prod)
+    x_m, y_m = min_ind//len(random_dirs), min_ind % len(random_dirs)
+    d_x, d_y = random_dirs[x_m], random_dirs[y_m]
+
+    steps = np.array(range(steps_res[2]))/(steps_res[2]-1)
+    steps *= steps_res[1] - steps_res[0]
+    steps += steps_res[0]
+
+    w = np.array(model.get_weights(), dtype=np.object)
+    evals = []
+    for x_step in steps:
+        y_evals = []
+        for y_step in steps:
+            model.set_weights(w+(x_step*d_x)+(y_step*d_y))
+            y_evals.append(model.evaluate(x=x, y=y, verbose=0))
+        evals.append(y_evals)
+    model.set_weights(w)
+    return steps, np.array(evals)
+
+
 def plot_loss_val(steps, trials_evals, plt_colors=('b', 'r'), plt_axes=None, linestyle='--'):
     if plt_axes is None:
         fig, ax_loss = plt.subplots()
