@@ -118,7 +118,7 @@ def create_shared_weights(conv1, conv2, in_shape1, in_shape2):
     conv2._trainable_weights.append(conv2.kernel)
     conv2._trainable_weights.append(conv2.bias)
 
-def resnet_v1(input_shape, depth, num_classes=10):
+def sharesnet_v1(input_shape, depth, num_classes=10):
     """ResNet Version 1 Model builder [a]
 
     Stacks of 2 x (3 x 3) Conv2D-BN-ReLU
