@@ -27,11 +27,10 @@ for model_name in os.listdir(model_base_path):
     save_dir = os.path.join(
         base_path, model_name, 'random_trials_' + str(n_trials)+'_'+str(steps_res[-1]))
 
-    print(model_dir, save_dir)
-
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
+    model.load_weights(model_dir)
     steps, evals = loss_val_filter_normalized_dir(
         model, x_test, y_test, steps_res=steps_res, n_trials=n_trials)
     np.save(os.path.join(save_dir, 'evals'), evals, allow_pickle=True)
